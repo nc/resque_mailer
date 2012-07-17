@@ -28,9 +28,7 @@ module Resque
         end
       end
 
-      def method_missing(method_name, *args)
-        return super if environment_excluded?
-        
+      def method_missing(method_name, *args)        
         if action_methods.include?(method_name.to_s)
           MessageDecoy.new(self, method_name, *args)
         else
@@ -43,8 +41,6 @@ module Resque
       end
 
       def environment_excluded?
-        puts current_env.inspect
-
         !ActionMailer::Base.perform_deliveries || excluded_environment?(current_env)
       end
 
@@ -87,14 +83,14 @@ module Resque
       end
 
       def deliver
+        return deliver! if @mailer_class.environment_excluded?
+
         if @mailer_class.deliver?
           resque.enqueue(@mailer_class, @method_name, *@args)
         end
       end
 
       def deliver_at(time)
-        puts @mailer_class.environment_excluded?
-
         return deliver! if @mailer_class.environment_excluded?
 
         unless resque.respond_to? :enqueue_at

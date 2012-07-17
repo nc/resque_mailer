@@ -73,5 +73,5 @@ PLATFORMS
 DEPENDENCIES
   rake (~> 0.9)
   resque_mailer!
-  rspec (~> 2.6)
+  rspec
   yard (>= 0.6.0)
